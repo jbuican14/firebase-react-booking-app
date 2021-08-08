@@ -1,23 +1,15 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import {
   CreateAccountPage,
   EmailConfirmationLanderPage,
+  ProtectedRoute,
   SignInPage,
+  useAuth,
 } from '../auth';
 import { ReservationsListPage } from '../reservations';
-import {
-  RestaurantDetailPage,
-  SearchPage,
-} from '../restaurants';
-import {
-  WriteAReviewPage,
-  WriteAReviewThankYouPage,
-} from '../reviews';
+import { RestaurantDetailPage, SearchPage } from '../restaurants';
+import { WriteAReviewPage, WriteAReviewThankYouPage } from '../reviews';
 import { EditProfilePage } from '../user';
 import './App.css';
 
@@ -28,39 +20,56 @@ import './App.css';
   app supports.
 */
 export function App() {
+  const { isLoading, user } = useAuth();
   return (
     <Router>
       <Switch>
-        <Route path='/sign-in'>
+        <Route path="/sign-in">
           <SignInPage />
         </Route>
-        <Route path='/create-account'>
+        <Route path="/create-account">
           <CreateAccountPage />
         </Route>
-        <Route path='/edit-profile'>
+        <ProtectedRoute
+          isAuthed={!!user}
+          isLoading={isLoading}
+          path="/edit-profile"
+        >
           <EditProfilePage />
-        </Route>
-        <Route path='/email-confirmation/success'>
+        </ProtectedRoute>
+        <Route path="/email-confirmation/success">
           <EmailConfirmationLanderPage success />
         </Route>
-        <Route path='/email-confirmation/failure'>
+        <Route path="/email-confirmation/failure">
           <EmailConfirmationLanderPage />
         </Route>
-        <Route path='/' exact>
+        <ProtectedRoute isAuthed={!!user} isLoading={isLoading} path="/" exact>
           <ReservationsListPage />
-        </Route>
-        <Route path='/search'>
+        </ProtectedRoute>
+        <ProtectedRoute isAuthed={!!user} isLoading={isLoading} path="/search">
           <SearchPage />
-        </Route>
-        <Route path='/restaurants/:id'>
+        </ProtectedRoute>
+        <ProtectedRoute
+          isAuthed={!!user}
+          isLoading={isLoading}
+          path="/restaurants/:id"
+        >
           <RestaurantDetailPage />
-        </Route>
-        <Route path='/write-a-review/:id'>
+        </ProtectedRoute>
+        <ProtectedRoute
+          isAuthed={!!user}
+          isLoading={isLoading}
+          path="/write-a-review/:id"
+        >
           <WriteAReviewPage />
-        </Route>
-        <Route path='/review/thank-you'>
+        </ProtectedRoute>
+        <ProtectedRoute
+          isAuthed={!!user}
+          isLoading={isLoading}
+          path="/review/thank-you"
+        >
           <WriteAReviewThankYouPage />
-        </Route>
+        </ProtectedRoute>
       </Switch>
     </Router>
   );

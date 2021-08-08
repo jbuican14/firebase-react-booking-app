@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as firebase from 'firebase/app';
-import 'firebase/analytics';
+import firebase from 'firebase/app';
 import 'firebase/auth';
 import './index.css';
 import { App, serviceWorker } from './app';
@@ -22,6 +21,8 @@ var firebaseConfig = {
   appId: '1:273295484065:web:7733a0d42b51ade9423ce0',
   measurementId: 'G-F10JHLGL1B',
 };
+
+firebase.initializeApp(firebaseConfig);
 
 // This is where the magic happens. React renders our App component
 // inside the div with the id "root"

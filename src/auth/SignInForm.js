@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Button, ErrorMessage, Heading, Modal, TextInput } from '../ui';
 import { ResetPasswordForm } from './ResetPasswordForm';
 
+import { signIn } from './signIn';
+
 const Form = styled.div`
   width: 350px;
   margin: 32px;
@@ -41,6 +43,15 @@ export const SignInForm = () => {
 
   const onSignInClicked = async () => {
     // Firebase code goes here
+    try {
+      console.log(emailValue, passwordValue);
+      const signing = await signIn(emailValue, passwordValue);
+      console.log(signing);
+      await signIn(emailValue, passwordValue);
+      history.push('/');
+    } catch (e) {
+      setErrorMessage(e.message);
+    }
   };
 
   const onSignInWithGoogleClicked = async () => {
