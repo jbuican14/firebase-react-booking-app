@@ -2,42 +2,43 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import {
-    Button,
-    Heading,
-    Link,
-    MaxWidthContentSection,
-    Modal,
-    Rating,
-    SelectionList,
-    Tag,
-    Thumbnail,
+  Button,
+  Heading,
+  Link,
+  MaxWidthContentSection,
+  Modal,
+  Rating,
+  SelectionList,
+  Tag,
+  Thumbnail,
 } from '../ui';
-import { ReviewListItem } from '../reviews';
+import { ReviewListItem, getReviews } from '../reviews';
 import { MakeAReservationForm } from '../reservations';
+import { getRestaurant } from './getRestaurants';
 
 const ThumbnailWrap = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const DetailsSection = styled.div`
-    flex: 8;
+  flex: 8;
 `;
 
 const TagSection = styled.div`
-    margin: 16px 0;
+  margin: 16px 0;
 `;
 
 const FullWidthButton = styled(Button)`
-    margin-top: 16px;
-    display: block;
-    width: 100%;
+  margin-top: 16px;
+  display: block;
+  width: 100%;
 `;
 
 const CenteredButton = styled(Button)`
-    display: block;
-    margin: auto;
+  display: block;
+  margin: auto;
 `;
 
 /*
@@ -46,56 +47,73 @@ const CenteredButton = styled(Button)`
     button that displays a modal of available reservation times.
 */
 export const RestaurantDetailPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [restaurant, setRestaurant] = useState({});
-    const [reviews, setReviews] = useState([]);
-    const { name, rating, address = {}, tags = [], bio } = restaurant || {};
+  const [isLoading, setIsLoading] = useState(true);
+  const [restaurant, setRestaurant] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const { name, rating, address = {}, tags = [], bio } = restaurant || {};
 
-    const { id } = useParams();
-    const [modalIsOpen, setModalIsOpen] = useState(false);
+  const { id } = useParams();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
-    useEffect(() => {
-        // Firebase code for loading the restaurant goes here
-    }, [id]);
+  useEffect(() => {
+    // Firebase code for loading the restaurant goes here
+    const loadRestaurant = async () => {
+      const result = await getRestaurant(id);
+      setRestaurant(result);
+      setIsLoading(false);
+    };
 
-    useEffect(() => {
-        // Firebase code for loading the restaurant's reviews goes here
-    }, [id]);
+    loadRestaurant();
+  }, [id]);
 
-    // Display a loading message while the Firebase data is loading
-    return isLoading ? <Heading>Loading...</Heading> : (
-        <MaxWidthContentSection>
-            <Heading>{name}</Heading>
-            <ThumbnailWrap>
-                <Thumbnail height='300px' width='600px' url={restaurant.imageUrl} />
-            </ThumbnailWrap>
-            <DetailsSection>
-                <Rating
-                    value={rating}
-                    readOnly />
-                <div>
-                    {address.street},&nbsp;
-                    {address.city}&nbsp;
-                </div>
-                <TagSection>
-                    {tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
-                </TagSection>
-                <div>{bio}</div>
-            </DetailsSection>
-            <FullWidthButton onClick={() => setModalIsOpen(true)}>Make a Reservation</FullWidthButton>
-            <SelectionList
-                title='Reviews'
-                items={reviews}
-                keyProperty='id'
-                itemComponent={ReviewListItem} />
-            <Link to={`/write-a-review/${restaurant.id}`}>
-                <CenteredButton>Write A Review</CenteredButton>
-            </Link>
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}>
-                    <MakeAReservationForm restaurant={restaurant} onClose={() => setModalIsOpen(false)} />
-            </Modal>
-        </MaxWidthContentSection>
-    )
-}
+  useEffect(() => {
+    // Firebase code for loading the restaurant's reviews goes here
+    const loadReviews = async () => {
+      const result = await getReviews(id);
+      setReviews(result);
+    };
+  }, [id]);
+
+  // Display a loading message while the Firebase data is loading
+  return isLoading ? (
+    <Heading>Loading...</Heading>
+  ) : (
+    <MaxWidthContentSection>
+      <Heading>{name}</Heading>
+      <ThumbnailWrap>
+        <Thumbnail height="300px" width="600px" url={restaurant.imageUrl} />
+      </ThumbnailWrap>
+      <DetailsSection>
+        <Rating value={rating} readOnly />
+        <div>
+          {address.street},&nbsp;
+          {address.city}&nbsp;
+        </div>
+        <TagSection>
+          {tags.map((tag) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </TagSection>
+        <div>{bio}</div>
+      </DetailsSection>
+      <FullWidthButton onClick={() => setModalIsOpen(true)}>
+        Make a Reservation
+      </FullWidthButton>
+      <SelectionList
+        title="Reviews"
+        items={reviews}
+        keyProperty="id"
+        itemComponent={ReviewListItem}
+      />
+      <Link to={`/write-a-review/${restaurant.id}`}>
+        <CenteredButton>Write A Review</CenteredButton>
+      </Link>
+      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
+        <MakeAReservationForm
+          restaurant={restaurant}
+          onClose={() => setModalIsOpen(false)}
+        />
+      </Modal>
+    </MaxWidthContentSection>
+  );
+};
