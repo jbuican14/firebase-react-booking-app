@@ -1,6 +1,9 @@
 // 1 T33t654!
 // 2 TP8vgSgQVaXd
 
+// babel npm i --save-dev @babel/core @babel/cli @babel/preset-env
+// npm i regenerator-runtime
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
